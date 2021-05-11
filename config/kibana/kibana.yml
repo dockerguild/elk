@@ -1,0 +1,8 @@
+server.name: kibana
+server.host: "0"
+telemetry.enabled: false
+
+# Elasticsearch
+elasticsearch.hosts: [ http://elasticsearch:9200 ]
+elasticsearch.username: admin
+elasticsearch.password: <insecure>

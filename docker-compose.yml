@@ -1,0 +1,60 @@
+version: "3"
+services:
+
+  elasticsearch:
+    image: elasticsearch:7.12.1
+    container_name: ${APP_NAME}_elasticsearch_${APP_INSTANCE}
+    restart: unless-stopped
+    volumes:
+      - ./config/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - ./data/elasticsearch:/usr/share/elasticsearch/data
+    ports:
+      - 127.0.0.1:9200:9200
+    env_file:
+      - .env
+      - .env.local
+    logging:
+      driver: json-file
+      options:
+        max-size: "1m"
+        max-file: "10"
+
+  kibana:
+    image: kibana:7.12.1
+    container_name: ${APP_NAME}_kibana_${APP_INSTANCE}
+    restart: unless-stopped
+    volumes:
+      - ./config/kibana/kibana.yml:/usr/share/kibana/config/kibana.yml
+    ports:
+      - 127.0.0.1:5601:5601
+    depends_on:
+      - elasticsearch
+    environment:
+      - ELASTICSEARCH_USERNAME=$ELASTIC_USERNAME
+      - ELASTICSEARCH_PASSWORD=$ELASTIC_PASSWORD
+    env_file:
+      - .env
+      - .env.local
+    logging:
+      driver: json-file
+      options:
+        max-size: "1m"
+        max-file: "10"
+
+  logstash:
+    image: logstash:7.12.1
+    container_name: ${APP_NAME}_logstash_${APP_INSTANCE}
+    restart: unless-stopped
+    volumes:
+      - ./config/logstash/logstash.yml:/usr/share/logstash/config/logstash.yml
+      - ./config/logstash/pipeline:/usr/share/logstash/pipeline
+    depends_on:
+      - elasticsearch
+    env_file:
+      - .env
+      - .env.local
+    logging:
+      driver: json-file
+      options:
+        max-size: "1m"
+        max-file: "10"
