@@ -18,6 +18,7 @@ KERNEL := $(shell sh -c "uname")
 .PHONY: install update start restart down
 
 install:
+	$(SUDO) sysctl -w vm.max_map_count=262144
 	make docker/start
 	$(SUDO) cp "$(PWD)/config/nginx/kibana.conf" "/etc/nginx/sites-enabled/kibana.conf"
 	$(SUDO) cp "$(PWD)/config/nginx/elasticsearch.conf" "/etc/nginx/sites-enabled/elasticsearch.conf"
